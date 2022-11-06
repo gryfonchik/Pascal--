@@ -1,0 +1,12 @@
+﻿Program hello; 
+Var a: integer 
+    b: String
+    c: float; // однострочный
+Begin
+a:= 1111; 
+b:= 'ded staryi';
+c:= 11.111 
+{ 
+блочный 
+}
+End. 

@@ -1,0 +1,12 @@
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\bin\Debug\net6.0\Lexer.deps.json
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\bin\Debug\net6.0\Lexer.dll
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\bin\Debug\net6.0\Lexer.pdb
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.csproj.AssemblyReference.cache
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.AssemblyInfoInputs.cache
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.AssemblyInfo.cs
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.csproj.CoreCompileInputs.cache
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.dll
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\refint\Lexer.dll
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\Lexer.pdb
+C:\Users\KAZAH\RiderProjects\Pascal--\Lexer\obj\Debug\net6.0\ref\Lexer.dll
