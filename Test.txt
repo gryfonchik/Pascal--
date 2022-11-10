@@ -1,12 +1,14 @@
 ﻿Program hello; 
 Var a: integer 
     b: String
-    c: float; // однострочный
+    c: float; // aaaaa
 Begin
-a:= 1111; 
+a:= %2110; 
 b:= 'ded staryi';
-c:= 11.111 
+c:= $Aa.111;{}
 { 
 блочный 
 }
-End. 
+1+=aaaa
+(* aaaa * aaa *)
+END.

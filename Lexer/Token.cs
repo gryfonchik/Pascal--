@@ -37,7 +37,6 @@
             Value = value;
             Source = source;
         }
-        
         public Position Position { get; private set; }
         public TokenType TokenType { get; }
         public object Value { get; }

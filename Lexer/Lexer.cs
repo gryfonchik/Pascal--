@@ -4,7 +4,6 @@ public class Lexer
 {
     private StreamReader _reader;
     private string _buffer;
-    
     char Read()
     {
         var c = (char)_reader.Read();
@@ -27,6 +26,11 @@ public class Lexer
         {
             return ScanNumber();
         }
+        if (c is '$' or '%' or '&')
+        {
+            Read();
+            return ScanSistemNum();
+        }
         {
             if ((c is >= 'a' and <= 'z') || (c is >= 'A' and <= 'Z') || (c is '_'))
             {
@@ -36,13 +40,27 @@ public class Lexer
             {
                 return ScanString();
             }
-            if ((c == '/') && (_reader.Peek() == '/'))
+            if (c == '/')
             {
-                while (_reader.Peek() != '\n')
+                Read();
+                if (_reader.Peek() == '/')
                 {
-                    Read();
-                    if (EOF())
-                        break;
+                    while (_reader.Peek() != '\n') 
+                    {
+                        Read();
+                            if (EOF()) 
+                                break; 
+                    }
+                }
+                else
+                {
+                    while (_reader.Peek() != '\n')
+                    {
+                        Read();
+                        if (EOF()) 
+                            break; 
+                    }
+                    return new Token(TokenType.NONE, ' ', _buffer);
                 }
             }
             if (c == '{') 
@@ -60,12 +78,43 @@ public class Lexer
             Read();
             switch (_buffer)
             {
-                case "(": return new Token(TokenType.SEPARATORS, "LeftRoundBracket", _buffer);
+                case "(":
+                {
+                    if (_reader.Peek() == '*')
+                    {
+                        Read();
+                        for (;;)
+                        {
+                            Read();
+                            if (_buffer.EndsWith('*') && (_reader.Peek() == ')'))
+                            {
+                                Read();
+                                return NextToken();
+                            }
+                            if (EOF())
+                            {
+                                return new Token(TokenType.NONE, ' ', _buffer);
+                            }
+                        }
+                    }
+                    return new Token(TokenType.SEPARATORS, "LeftRoundBracket", _buffer);
+                }
+                    
                 case ")": return new Token(TokenType.SEPARATORS, "RightRoundBracket", _buffer);
                 case "[": return new Token(TokenType.SEPARATORS, "LeftSquareBracket", _buffer);
                 case "]": return new Token(TokenType.SEPARATORS, "RightSquareBracket", _buffer);
-                case ".": return new Token(TokenType.SEPARATORS, "Dot", _buffer);
-                case "..": return new Token(TokenType.SEPARATORS, "Range", _buffer);
+                case ".":
+                {
+                    if (_reader.Peek() == '.')
+                    {
+                        Read();
+                        switch (_buffer)
+                        {
+                            case "..": return new Token(TokenType.OPERATOR, "Range", _buffer);
+                        }
+                    }
+                    return new Token(TokenType.SEPARATORS, "Dot", _buffer);
+                }
                 case ":":
                 {
                     if (_reader.Peek() == '=')
@@ -78,12 +127,24 @@ public class Lexer
                     }
                     return new Token(TokenType.SEPARATORS, "Сolon", _buffer);
                 }
-                    
                 case ";": return new Token(TokenType.SEPARATORS, "Semicolon", _buffer);
-                
                 case "=": return new Token(TokenType.OPERATOR, "Equal", _buffer);
                 case "<":
                 {
+                    if ((_reader.Peek() == '<') || (_reader.Peek() == '>') || (_reader.Peek() == '='))
+                    {
+                        Read();
+                        switch (_buffer)
+                        {
+                            case "<<": return new Token(TokenType.OPERATOR, "BitwiseShiftToTheLeft", _buffer);
+                            case "<=": return new Token(TokenType.OPERATOR, "LessThanOrEqual", _buffer);
+                            case "<>": return new Token(TokenType.OPERATOR, "NotEqual", _buffer); 
+                        }
+                    }
+                    return new Token(TokenType.OPERATOR, "GreaterThan", _buffer);
+                }
+                case ">":
+                { 
                     if ((_reader.Peek() == '>') || (_reader.Peek() == '='))
                     {
                         Read();
@@ -94,20 +155,6 @@ public class Lexer
                         }
                     }
                     return new Token(TokenType.OPERATOR, "LessThan", _buffer);
-                }
-                case ">":
-                {
-                    if ((_reader.Peek() == '<') || (_reader.Peek() == '>') || (_reader.Peek() == '='))
-                    {
-                        Read();
-                        switch (_buffer)
-                        {
-                            case "<<": return new Token(TokenType.OPERATOR, "BitwiseShiftToTheLeft", _buffer);
-                            case "<=": return new Token(TokenType.OPERATOR, "LessThanOrEqual", _buffer);
-                            case "<>": return new Token(TokenType.OPERATOR, "NotEqual", _buffer);
-                        }
-                    }
-                    return new Token(TokenType.OPERATOR, "GreaterThan", _buffer);
                 }
                 case "+":
                 {
@@ -172,16 +219,77 @@ public class Lexer
         {
             Read();
         }
-
-        if (_reader.Peek() == '.')
+        if (_reader.Peek() is '.')
         {
             Read();
-            if (_reader.Peek() != '.') 
-                while ('0' <= _reader.Peek() && _reader.Peek() <= '9')
-                    Read();
+            while ('0' <= _reader.Peek() && _reader.Peek() <= '9')
+                Read();
             return new Token(TokenType.DOUBLE, _buffer, _buffer);
         }
         return new Token(TokenType.INTEGER, _buffer, _buffer);
+    }
+
+    Token ScanSistemNum()
+    {
+        if (_buffer == "%")
+        {
+            if (_reader.Peek() is >= '0' and <= '1')
+            {
+               while ('0' <= _reader.Peek() && _reader.Peek() <= '1')
+               {
+                   Read();
+                   if (_reader.Peek() == '.')
+                   {
+                       Read();
+                       while ('0' <= _reader.Peek() && _reader.Peek() <= '1')
+                           Read();
+                       return new Token(TokenType.DOUBLE, _buffer, _buffer);
+                   }
+               } 
+               return new Token(TokenType.INTEGER, _buffer, _buffer);
+            }
+            return new Token(TokenType.NONE, _buffer, _buffer);
+        }
+
+        if (_buffer == "&")
+        {
+            if (_reader.Peek() is >= '0' and <= '7')
+            {
+                while ('0' <= _reader.Peek() && _reader.Peek() <= '7')
+                {
+                    Read();
+                    if (_reader.Peek() == '.')
+                    {
+                        Read();
+                        while ('0' <= _reader.Peek() && _reader.Peek() <= '7')
+                            Read();
+                        return new Token(TokenType.DOUBLE, _buffer, _buffer);
+                    }
+                } 
+                return new Token(TokenType.INTEGER, _buffer, _buffer);
+            }
+            return new Token(TokenType.NONE, _buffer, _buffer);
+        }
+        if (_buffer == "$")
+        {
+            if (_reader.Peek() is (>= '0' and <= '9') or (>='a' and <= 'f') or (>='A' and <= 'F'))
+            {
+                while (('0' <= _reader.Peek() && _reader.Peek() <= '9') || ('a' <= _reader.Peek() && _reader.Peek() <= 'f') || ('A' <= _reader.Peek() && _reader.Peek() <= 'F'))
+                {
+                    Read();
+                    if (_reader.Peek() == '.')
+                    {
+                        Read();
+                        while (('0' <= _reader.Peek() && _reader.Peek() <= '9') || ('a' <= _reader.Peek() && _reader.Peek() <= 'f') || ('A' <= _reader.Peek() && _reader.Peek() <= 'F'))
+                            Read();
+                        return new Token(TokenType.DOUBLE, _buffer, _buffer);
+                    }
+                }
+                return new Token(TokenType.INTEGER, _buffer, _buffer);
+            }
+            return new Token(TokenType.NONE, _buffer, _buffer);
+        } 
+        return new Token(TokenType.NONE, _buffer, _buffer);
     }
     Token ScanId()
     {
@@ -190,7 +298,9 @@ public class Lexer
         {
             Read();
         }
-        if (Enum.IsDefined(typeof(Keywords), _buffer))
+        TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
+        string lower = ti.ToLower(_buffer);
+        if (Enum.IsDefined(typeof(Keywords), ti.ToTitleCase(lower)))
         {
             return new Token(TokenType.KEYWORD, _buffer, _buffer);
         }
@@ -203,6 +313,13 @@ public class Lexer
         for(;;)
         {
             Read();
+            if (_reader.Peek() == '\n')
+            {
+                while (_reader.Peek() != '\'')
+                    Read();
+                Read();
+                return new Token(TokenType.NONE, ' ', _buffer);
+            }
             if (_reader.Peek() == '\'')
             {
                 Read();
@@ -320,5 +437,4 @@ public class Lexer
         Virtual,
         Write
     }
-
 }  
