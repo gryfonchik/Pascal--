@@ -5,7 +5,7 @@ Var a: integer
 Begin
 a:= %2110; 
 b:= 'ded staryi';
-c:= $Aa.111;{}
+c:= $Aa.111;
 { 
 блочный 
 }
