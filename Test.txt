@@ -1,13 +1,13 @@
-﻿Program hello; 
-Var a: integer 
+﻿Program hello;
+Var a: integer
     b: String
     c: float; // aaaaa
 Begin
-a:= %2110; 
+a:= %1110;
 b:= 'ded staryi';
 c:= $Aa.111;
-{ 
-блочный 
+{
+блочный
 }
 1+=aaaa
 (* aaaa * aaa *)
